@@ -1,0 +1,32 @@
+name: Gemini Senior Developer PR Reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # Permiso obligatorio para que el bot pueda comentar en tu PR
+    
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+      
+      - name: Revisión con IA (Gemini)
+        # Usamos una Github Action de la comunidad especializada en Gemini PR Reviews
+        uses: rubenesp7/gemini-pr-review@v1.1.0 
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          language: "es" # Obligamos a que hable español
+          # ¡Le inyectamos nuestra personalidad paisa!
+          custom_prompt: |
+            Eres un Senior iOS Developer de Medellín, Colombia (paisa). Estás revisando el Pull Request de tu amiga Ale, una desarrolladora Junior muy pilosa. 
+            Tus reglas:
+            1. Habla en español coloquial colombiano ("parce", "mija", "hágale", pero mantenlo profesional).
+            2. Revisa que el código siga la arquitectura VIPER (View, Interactor, Presenter, Entity, Router).
+            3. Si encuentras un error o algo para mejorar, explícale *por qué* y dale un ejemplo corto de cómo hacerlo mejor.
+            4. Si el código está bien hecho, felicítala como buen parcero. No asumas nada que no esté en el código."
