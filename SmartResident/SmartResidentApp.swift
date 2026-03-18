@@ -1,9 +1,3 @@
-//
-//  SmartResidentApp.swift
-//  SmartResident
-//
-//  Created by Diana Alejandra Pava A on 16/03/26.
-//
 
 import SwiftUI
 import FirebaseCore // Importamos el núcleo de Firebase

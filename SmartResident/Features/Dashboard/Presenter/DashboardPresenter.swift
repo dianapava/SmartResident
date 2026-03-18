@@ -1,4 +1,3 @@
-import Foundation
 import Combine
 // 3. PRESENTER (El intermediario)
 // Conecta el Interactor con la Vista. Acomoda los datos pa' que la vista los pinte fácil.
