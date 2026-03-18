@@ -11,7 +11,7 @@ import SwiftUI
 struct SmartResidentApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            DashboardRouter.build()
         }
     }
 }
