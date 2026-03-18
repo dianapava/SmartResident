@@ -61,6 +61,17 @@ struct AuthView: View {
                 .cornerRadius(10)
                 .padding(.horizontal)
                 
+                // 🛑 BOTÓN TRAMPA PARA PROBAR EL PR REVIEWER DE GEMINI
+                Button(action: {
+                    // MALA PRÁCTICA VIPER: Lógica directa en la vista
+                    if presenter.credentials.email == "admin@test.com" {
+                        print("Login directo sin pasar por el Presenter ni el Interactor. ¡Pecado en VIPER!")
+                    }
+                }) {
+                    Text("Botón Trampa VIPER")
+                        .foregroundColor(.gray)
+                }
+                
                 Spacer()
             }
             .navigationBarHidden(true)
