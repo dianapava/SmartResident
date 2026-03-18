@@ -38,7 +38,21 @@ jobs:
             -H "Content-Type: application/json" \
             -d "$JSON_PAYLOAD")
             
-          COMMENT=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text')
+          # 4. Trampa pa' cazar errores: Si Gemini se ofende, leemos el porqué
+          ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error.message // empty')
           
-          # 4. Publicamos la respuesta de la IA como un comentario en tu Pull Request
+          if [ ! -z "$ERROR_MSG" ]; then
+            gh pr comment $PR_NUMBER --body "❌ **Paila:** Google Gemini nos rebotó la conexión. Razón: _$ERROR_MSG_ (revisa el API Key mija)."
+            exit 1
+          fi
+            
+          COMMENT=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty')
+          
+          if [ -z "$COMMENT" ]; then
+             gh pr comment $PR_NUMBER --body "❌ **Uy parce:** La IA devolvió la mente en blanco. Revisa los logs de Github Actions."
+             echo "RESUPUESTA CRUDA DE GEMINI: $RESPONSE"
+             exit 1
+          fi
+          
+          # 5. Publicamos la respuesta de la IA como un comentario en tu Pull Request
           gh pr comment $PR_NUMBER --body "$COMMENT"
