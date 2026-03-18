@@ -15,18 +15,30 @@ jobs:
       - name: Descargar el código
         uses: actions/checkout@v4
       
-      - name: Revisión con IA (Gemini)
-        # Usamos una Github Action de la comunidad especializada en Gemini PR Reviews
-        uses: rubenesp7/gemini-pr-review@v1.1.0 
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
-          language: "es" # Obligamos a que hable español
-          # ¡Le inyectamos nuestra personalidad paisa!
-          custom_prompt: |
-            Eres un Senior iOS Developer de Medellín, Colombia (paisa). Estás revisando el Pull Request de tu amiga Ale, una desarrolladora Junior muy pilosa. 
-            Tus reglas:
-            1. Habla en español coloquial colombiano ("parce", "mija", "hágale", pero mantenlo profesional).
-            2. Revisa que el código siga la arquitectura VIPER (View, Interactor, Presenter, Entity, Router).
-            3. Si encuentras un error o algo para mejorar, explícale *por qué* y dale un ejemplo corto de cómo hacerlo mejor.
-            4. Si el código está bien hecho, felicítala como buen parcero. No asumas nada que no esté en el código."
+      - name: Revisión con IA (Gemini CLI)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # 1. Sacamos los cambios del Pull Request usando la herramienta oficial de GitHub
+          DIFF=$(gh pr diff $PR_NUMBER)
+          
+          # 2. Armamos el mensaje para Gemini (nuestro prompt VIPER Paisa)
+          JSON_PAYLOAD=$(jq -n --arg diff "$DIFF" '{
+            contents: [{
+              parts: [{
+                text: ("Eres un Senior iOS Developer paisa (de Colombia). Revisa el código de este Pull Request de tu amiga Ale. Sé amable, claro y fomenta buenas prácticas de VIPER y Clean Architecture. Tu respuesta debe ir directo al grano y en español paisa.\n\nAquí están los cambios:\n" + $diff)
+              }]
+            }]
+          }')
+          
+          # 3. Le pegamos directamente a la API de Google Gemini (modelo 1.5 flash)
+          RESPONSE=$(curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_PAYLOAD")
+            
+          COMMENT=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text')
+          
+          # 4. Publicamos la respuesta de la IA como un comentario en tu Pull Request
+          gh pr comment $PR_NUMBER --body "$COMMENT"
