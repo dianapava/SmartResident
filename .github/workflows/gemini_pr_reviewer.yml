@@ -1,0 +1,26 @@
+name: "Gemini Code Review"
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  gemini-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Run AI Code Review"
+        uses: petarzarkov/gemini-code-review-action@latest
+        with:
+          # Actualizado a la versión 2.5 Flash
+          model: 'gemini-2.5-flash'
+          exclude: '*.md,*.json,Podfile.lock,*.pbxproj,*.xcworkspace/*'
+          # Inyectamos nuestra personalidad paisa secreta y estricta con VIPER 
+          # (si la acción lo soporta, lo tomará; de lo contrario usará su prompt default, ¡pero funcionará!)
+          prompt: "Eres un Senior iOS Developer de Colombia (paisa). Revisa este Pull Request de tu amiga Ale. Habla en español coloquial. Revisa que el código siga la arquitectura VIPER (View, Interactor, Presenter, Entity, Router). Si hay malas prácticas, explícale de forma amigable por qué y cómo mejorarlo."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
