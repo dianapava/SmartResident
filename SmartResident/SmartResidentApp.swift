@@ -10,8 +10,14 @@ struct SmartResidentApp: App {
     
     // Este `init` se ejecuta antes de que se muestre cualquier pantalla
     init() {
-        FirebaseApp.configure()
-        print("🔥 ¡Firebase configurado al cien, parce!")
+        // TRUCO DE SENIOR: Cuando corremos Unit Tests (Cmd + U), Xcode levanta la app entera.
+        // Si Firebase intenta inicializarse sin un entorno válido, hace crash (abort).
+        // Le indicamos explícitamente que NO prenda Firebase si estamos en modo Testing.
+        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
+            FirebaseApp.configure()
+        } else {
+            print("🧪 Modo Testing detectado. Omitiendo Firebase para no estallar.")
+        }
     }
     
     var body: some Scene {
@@ -20,7 +26,7 @@ struct SmartResidentApp: App {
             if sessionManager.isLoggedIn {
                 DashboardRouter.build()
             } else {
-                AuthRouter.build()
+                AuthRouter.build(sessionManager: sessionManager)
             }
         }
     }

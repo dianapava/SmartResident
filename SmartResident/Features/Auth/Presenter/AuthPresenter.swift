@@ -28,11 +28,11 @@ class AuthPresenter: ObservableObject {
                 print("¡Bingo! Login exitoso de: \(uid)")
                 isLoading = false
                 router.navigateToDashboard()
-            } catch let error as NSError {
+            } catch {
                 // Capturamos el error para mostrarlo bonito en pantalla
                 isLoading = false
                 
-                // Aquí deberíamos mapear errores de Firebase a español, pero usaremos el localize genérico
+                // Si es un error de validación o Firebase, obtenemos la descripción localizada
                 errorMessage = error.localizedDescription
             }
         }
