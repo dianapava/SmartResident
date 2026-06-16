@@ -14,10 +14,9 @@ class AuthRouter {
         
         // Mija pille: aquí es donde "Inyectamos" Firebase. 
         // El Interactor ni se entera.
-        let authService = FirebaseAuthManager() 
-        let interactor = AuthInteractor(authService: authService)
+        let interactor = AuthInteractor()
         let presenter = AuthPresenter(interactor: interactor, router: router)
-        
+        interactor.presenter = presenter
         return AuthView(presenter: presenter)
     }
     
