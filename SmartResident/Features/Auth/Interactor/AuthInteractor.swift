@@ -17,7 +17,8 @@ class AuthInteractor: AuthInteractorInputProtocol {
     
     // 2. Inyección de Dependencias: Por defecto le pedimos la instancia a la Fábrica.
     // (Esto te permitirá pasarle un "Mock" en tus pruebas unitarias más adelante).
-    init(authManager: AuthManagerProtocol = AuthServiceFactory.makeAuthManager()) {
+ 
+    init(authManager: AuthManagerProtocol) {
         self.authManager = authManager
     }
     
