@@ -45,7 +45,7 @@ final class AuthInteractorTests: XCTestCase {
         do {
             _ = try await sut.login(credentials: credencialesMalas)
             XCTFail("El test falló porque el Interactor dejó pasar un email vacío")
-        } catch let error as AuthInteractor.ValidationError {
+        } catch let error as ValidationError {
             XCTAssertEqual(error, .emptyEmail)
             XCTAssertEqual(error.localizedDescription, "El correo no puede estar vacío, mija.")
         } catch {
