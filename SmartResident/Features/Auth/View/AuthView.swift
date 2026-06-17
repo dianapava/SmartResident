@@ -25,20 +25,9 @@ struct AuthView: View {
                 
                     ForgetPasswordButton()
                     
-                  
-                    
-                    Button(action: {
-                        // Acción para ir al registro
-                    }) {
-                        // Al usar el signo "+" concatenamos los textos manteniendo el comportamiento de un solo párrafo
-                        (Text("¿No tienes una cuenta? ")
-                            .foregroundColor(.white.opacity(0.6))
-                         + Text("Regístrate")
-                            .bold()
-                            .foregroundColor(.white))
-                        .font(.footnote)
-                        .padding(.vertical, 12)
-                    }
+                    LoginButton(presenter: presenter)
+    
+                    RegisterButton()
                 }
             }
             .ignoresSafeArea()
@@ -55,7 +44,7 @@ fileprivate struct LoginTitle: View {
                 .font(.title).bold()
                 .foregroundColor(.white)
             Spacer()
-        }
+        }.padding(.leading, 20)
     }
 }
 
@@ -92,11 +81,13 @@ fileprivate struct ForgetPasswordButton: View {
                     .foregroundColor(.white) // Un blanco más suave
                     .padding(.vertical, 8) // Agranda el área táctil verticalmente
             }
-        }
+        }.padding(.trailing, 20)
     }
 }
 
 fileprivate struct LoginButton: View {
+    let presenter: AuthPresenter
+
     var body: some View {
         Button(action: {
             presenter.loginTapped()
@@ -115,5 +106,24 @@ fileprivate struct LoginButton: View {
         .foregroundColor(.black)
         .cornerRadius(10)
         .padding(.horizontal)
+    }
+}
+
+fileprivate struct RegisterButton: View {
+
+    var body: some View {
+        HStack{
+            Text("¿No tienes una cuenta? ")
+                .foregroundColor(.white.opacity(0.6))
+            Button(action: {
+                // Acción para ir al registro
+            }) {
+                Text("Regístrate")
+                    .bold()
+                    .foregroundColor(.white)
+                    .font(.footnote)
+                    .padding(.vertical, 12)
+            }
+        }
     }
 }
